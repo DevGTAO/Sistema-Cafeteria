@@ -1,12 +1,12 @@
 import getpass
 import os
 
-from services.user_services import insert_user, email_valido, login, delete_user, pause
+from services.user_services import insert_user, email_valido, login, input_senha, delete_user, pause
 from view.admin_view import panel_admin
 
 while True:
     print("###    PÁGINA INICIAL    ###")
-    print("\n1 - Cadastrar conta\n2 - Entrar\n3 - Remover conta\n4 - Sair do sistema")
+    print("\n1 - Cadastrar conta\n2 - Entrar\n3 - Remover conta\n0 - Sair do sistema")
     opcao = int(input("\nDigite a opção: "))
 
     if opcao == 1:
@@ -28,7 +28,7 @@ while True:
 
     elif opcao == 2:
         email = input("\nDigite seu email: ")
-        password = getpass.getpass("Digite sua senha: ")
+        password = input_senha()
         user_auth = login(email, password)
         if user_auth:
             print("\nUsuário logado!")
@@ -54,7 +54,7 @@ while True:
             print("Usuário ou senha incorretos!")
             pause()
 
-    elif opcao == 4:
+    elif opcao == 0:
         os.system("cls")
         break
     else:

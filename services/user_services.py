@@ -1,5 +1,6 @@
 import os
 import re
+import msvcrt
 
 from config.db import criar_conexao
 from config.crypt import criptografar, checar_password
@@ -10,7 +11,7 @@ def insert_user(nome: str, email: str, password: str):
         conn = criar_conexao()
         cursor = conn.cursor()
         password = criptografar(password)
-        sql = "INSERT INTO clientes (nome, email, password) VALUES (%s, %s, %s)"
+        sql = "INSERT INTO funcionarios (nome, email, password) VALUES (%s, %s, %s)"
         cursor.execute(sql, (nome, email, password))
         conn.commit()
         return True
@@ -32,7 +33,7 @@ def login(email: str, password: str):
     try:
         conn = criar_conexao()
         cursor = conn.cursor()
-        sql = "SELECT * FROM clientes WHERE email=%s"
+        sql = "SELECT * FROM funcionarios WHERE email=%s"
         cursor.execute(sql, (email,))
         user = cursor.fetchone()
         if user and checar_password(password, bytes(user[3])):
@@ -45,12 +46,29 @@ def login(email: str, password: str):
         cursor.close()
         conn.close()
 
+def input_senha(prompt="Senha: "):
+    print(prompt, end="", flush=True)
+    password = ""
+    while True:
+        char = msvcrt.getch()
+        if char in {b"\r", b"\n"}:  # Enter
+            print()
+            break
+        elif char == b"\x08":  # Backspace
+            if len(password) > 0:
+                password = password[:-1]
+                print("\b \b", end="", flush=True)
+        else:
+            password += char.decode("utf-8")
+            print("*", end="", flush=True)
+    return password
+
 
 def delete_user(email):
     try:
         conn = criar_conexao()
         cursor = conn.cursor()     
-        sql = "DELETE FROM clientes WHERE email=%s"
+        sql = "DELETE FROM funcionarios WHERE email=%s"
         cursor.execute(sql, (email,))
         conn.commit()
         return cursor.rowcount > 0
